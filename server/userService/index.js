@@ -13,16 +13,18 @@ app.get("/login", (req, res) => {
   if (req.body && req.body.email) {
     const email = req.body.email;
     connection.query(
-      `SELECT nickname FROM users WHERE email='${email}'`,
+      `SELECT userId, nickname FROM users WHERE email='${email}'`,
       (err, result) => {
         if (err) {
           console.log(err);
           res.sendStatus(500);
           return;
-        } else if (!result.length) {
+        } else if (!result.length || result.length > 1) {
           res.sendStatus(404);
           return;
         }
+        const user = result[0];
+        Object.assign(user, { email });
         res.json(result);
       }
     );
