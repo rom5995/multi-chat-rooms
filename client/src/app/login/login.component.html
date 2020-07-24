@@ -1,0 +1,15 @@
+<h2>Login</h2>
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label>E-mail</label>
+    <input type="text" formControlName="email" placeholder="Enter E-mail" />
+    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+      <div *ngIf="f.email.errors.required">email is required</div>
+    </div>
+  </div>
+  <div>
+    <button>
+      Login
+    </button>
+  </div>
+</form>

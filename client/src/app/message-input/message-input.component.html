@@ -1,0 +1,8 @@
+<div>
+  <input type="text" #messageContent placeholder="Enter message" />
+</div>
+<div>
+  <button (click)="onSend(messageContent.value); messageContent.value = ''">
+    Send
+  </button>
+</div>

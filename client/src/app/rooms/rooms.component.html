@@ -1,0 +1,6 @@
+<h2>Chat Rooms</h2>
+<ul>
+  <li *ngFor="let room of rooms">
+    <a [routerLink]="['room', room.roomId]"> {{ room.name }}</a>
+  </li>
+</ul>

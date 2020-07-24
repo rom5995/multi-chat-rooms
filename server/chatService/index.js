@@ -11,20 +11,61 @@ const io = require("socket.io").listen(server);
 
 const socketHandle = require("./socketHandle");
 
+const rooms = {};
 io.on("connection", async (socket) => {
   const { userId, roomId } = socket.handshake.query;
-  console.log("userId", userId);
-  console.log("roomId", roomId);
+  const user = { userId };
+
+  if (rooms.hasOwnProperty(roomId)) {
+    rooms[roomId].push(user);
+  } else {
+    rooms[roomId] = [user];
+  }
 
   socket.join(roomId);
-  socket
-    .in(roomId)
-    .emit("is_online", `user ${userId} is connected to the room`);
+  io.in(roomId).emit("is_online", rooms[roomId]);
+
+  socket.on("message", (message) => {
+    if ((message && message.userId, message.text)) {
+      io.in(roomId).emit("message", message);
+      writeMessageToDB(message, roomId);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    const index = rooms[roomId].indexOf(user);
+    if (index >= 0) {
+      rooms[roomId].splice(index, 1);
+    }
+    socket.in(roomId).emit("is_online", rooms[roomId]);
+  });
 });
+
+const writeMessageToDB = (message, roomId) => {
+  connection.query(
+    `INSERT INTO messages (roomId, userId, text) VALUES (${roomId},${message.userId},'${message.text}')`,
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    }
+  );
+};
 
 const connection = require("./database");
 
 app.use(bodyParser.json());
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.header("Access-Control-Allow-Methods", "POST");
+  next();
+});
 
 app.get("/", (req, res) => {
   connection.query("SELECT roomId, name FROM rooms", (err, result) => {

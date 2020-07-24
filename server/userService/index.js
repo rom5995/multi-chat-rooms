@@ -9,7 +9,17 @@ const connection = require("./database");
 
 app.use(bodyParser.json());
 
-app.get("/login", (req, res) => {
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.header("Access-Control-Allow-Methods", "POST");
+  next();
+});
+
+app.post("/login", (req, res) => {
   if (req.body && req.body.email) {
     const email = req.body.email;
     connection.query(
@@ -25,7 +35,7 @@ app.get("/login", (req, res) => {
         }
         const user = result[0];
         Object.assign(user, { email });
-        res.json(result);
+        res.json(user);
       }
     );
   } else res.sendStatus(400);
