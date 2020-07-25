@@ -1,0 +1,23 @@
+<h2>Register</h2>
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="email">E-mail</label>
+    <input type="text" formControlName="email" />
+    <div *ngIf="submitted && f.email.errors">
+      <div *ngIf="f.email.errors.required">E-mail is required</div>
+    </div>
+  </div>
+  <div>
+    <label for="nickname">Nickname</label>
+    <input type="text" formControlName="nickname" />
+    <div *ngIf="submitted && f.nickname.errors">
+      <div *ngIf="f.nickname.errors.required">Nickname is required</div>
+    </div>
+  </div>
+  <div>
+    <button [disabled]="loading">
+      Register
+    </button>
+    <a routerLink="/login" class="btn btn-link">Cancel</a>
+  </div>
+</form>

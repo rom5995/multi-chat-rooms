@@ -1,5 +1,10 @@
 <h2>{{ roomName }}</h2>
-<h5>online users: {{ onlineUsers.length }}</h5>
+<div>
+  <button (click)="onLeave()">
+    Leave
+  </button>
+</div>
+<app-online-users [onlineUsers]="onlineUsers"></app-online-users>
 <ul>
   <li *ngFor="let message of messages">
     {{ message.nickname }}: {{ message.text }}

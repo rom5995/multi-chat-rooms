@@ -11,29 +11,28 @@ import { Room, Message } from '../../models';
   providedIn: 'root',
 })
 export class RoomService {
+  private url: string = 'http://localhost:4000/rooms';
   constructor(private http: HttpClient, private socketService: SocketService) {}
 
   getRooms(): Observable<Room[]> {
     return this.http
-      .get<Room[]>('http://localhost:4000')
+      .get<Room[]>(this.url)
       .pipe(catchError(this.handleError<Room[]>('getRooms', [])));
   }
 
   getRoomHistory(id: number): Observable<any> {
-    const url = `http://localhost:4000/getRoomHistory/${id}`;
+    const url = `${this.url}/getRoomHistory/${id}`;
     return this.http
       .get<Message[]>(url)
       .pipe(catchError(this.handleError<any>('getRoomHistory', [])));
   }
 
   createNewRoom(room: Room) {
-    return this.http
-      .post<any>('http://localhost:4000/createNewRoom', room)
-      .pipe(
-        map((newRoom) => {
-          this.socketService.createRoom(newRoom);
-        })
-      );
+    return this.http.post<any>(`${this.url}/createNewRoom`, room).pipe(
+      map((newRoom) => {
+        this.socketService.createRoom(newRoom);
+      })
+    );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

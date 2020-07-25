@@ -2,7 +2,7 @@ import { User } from './../core/models/user';
 import { AuthenticationService } from './../core/services/authentication/authentication.service';
 import { SocketService } from './../core/services/socket/socket.service';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { RoomService } from './../core/services/room/room.service';
 import { Room, Message } from './../core/models';
@@ -24,6 +24,7 @@ export class ChatRoomComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private roomService: RoomService,
     private socketService: SocketService,
     private authenticationService: AuthenticationService
@@ -74,5 +75,10 @@ export class ChatRoomComponent implements OnInit {
       this.messages = result.messages;
       this.roomName = result.roomName;
     });
+  }
+
+  onLeave(): void {
+    this.leftRoom();
+    this.router.navigate(['chat/lobby']);
   }
 }

@@ -10,6 +10,7 @@ import { User } from '../../models';
   providedIn: 'root',
 })
 export class AuthenticationService {
+  private url: string = 'http://localhost:3000/users';
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
 
@@ -26,15 +27,28 @@ export class AuthenticationService {
 
   login(email) {
     return this.http
-      .post<any>(`http://localhost:3000/login`, { email })
+      .post<User>(`${this.url}/login`, { email })
       .pipe(
         map((user) => {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-          this.socketService.connect(user.userId);
+          this.connectToChat(user);
           return user;
         })
       );
+  }
+
+  private connectToChat(user: User): void {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+    this.socketService.connect(user.userId);
+  }
+
+  register(user: User) {
+    return this.http.post<User>(`${this.url}/register`, user).pipe(
+      map((user) => {
+        this.connectToChat(user);
+        return user;
+      })
+    );
   }
 
   logout() {

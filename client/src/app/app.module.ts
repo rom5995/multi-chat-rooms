@@ -12,9 +12,11 @@ import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { MessageInputComponent } from './message-input/message-input.component';
 import { CreateRoomComponent } from './create-room/create-room.component';
+import { OnlineUsersComponent } from './online-users/online-users.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, ChatComponent, RoomsComponent, ChatRoomComponent, LobbyComponent, MessageInputComponent, CreateRoomComponent],
+  declarations: [AppComponent, LoginComponent, ChatComponent, RoomsComponent, ChatRoomComponent, LobbyComponent, MessageInputComponent, CreateRoomComponent, OnlineUsersComponent, RegisterComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
