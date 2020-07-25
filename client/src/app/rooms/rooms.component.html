@@ -1,7 +1,18 @@
 <h2>Chat Rooms</h2>
-<ul>
-  <li *ngFor="let room of rooms">
-    <a [routerLink]="['room', room.roomId]"> {{ room.name }}</a>
-  </li>
-</ul>
-<app-create-room></app-create-room>
+<div class="container">
+  <div class="row">
+    <div class="list-group rooms-list col-10">
+      <a
+        *ngFor="let room of rooms"
+        [routerLink]="['room', room.roomId]"
+        class="list-group-item list-group-item-action"
+      >
+        {{ room.name }}
+      </a>
+    </div>
+  </div>
+  <br />
+  <div class="row">
+    <app-create-room></app-create-room>
+  </div>
+</div>

@@ -1,8 +1,21 @@
 <div>
-  <input type="text" #roomName placeholder="Enter new room name" />
-</div>
-<div>
-  <button (click)="onCreate(roomName.value); roomName.value = ''">
-    Create
-  </button>
+  <div class="row">
+    <div class="col">
+      <input
+        type="text"
+        #roomName
+        class="form-control"
+        (keyup.enter)="onCreate(roomName.value); roomName.value = ''"
+        placeholder="Enter new room name"
+      />
+    </div>
+    <div class="col-3">
+      <button
+        (click)="onCreate(roomName.value); roomName.value = ''"
+        class="btn btn-primary"
+      >
+        Create
+      </button>
+    </div>
+  </div>
 </div>

@@ -1,13 +1,27 @@
-<h2>{{ roomName }}</h2>
-<div>
-  <button (click)="onLeave()">
-    Leave
-  </button>
+<div class="container">
+  <div class="row">
+    <div class="col-3">
+      <h2>{{ roomName }}</h2>
+    </div>
+    <div class="col-7">
+      <app-online-users [onlineUsers]="onlineUsers"></app-online-users>
+    </div>
+    <div class="col-2">
+      <button (click)="onLeave()" class="btn btn-danger">
+        X
+      </button>
+    </div>
+  </div>
+  <div class="row align-items-center">
+    <div class="col-12 messages-list">
+      <div *ngFor="let message of messages" class="list-group-item">
+        {{ message.nickname }}: {{ message.text }}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <app-message-input [user]="user" [roomId]="roomId"></app-message-input>
+    </div>
+  </div>
 </div>
-<app-online-users [onlineUsers]="onlineUsers"></app-online-users>
-<ul>
-  <li *ngFor="let message of messages">
-    {{ message.nickname }}: {{ message.text }}
-  </li>
-</ul>
-<app-message-input [user]="user" [roomId]="roomId"></app-message-input>

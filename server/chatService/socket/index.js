@@ -17,16 +17,16 @@ const socketHandle = (server) => {
     socket.on("message", (message) => {
       if (message && message.userId && message.text) {
         message.text = filter.clean(message.text);
-        io.in(roomId).emit("message", message);
-        queries.insertNewMessage(roomId, message);
+        if (queries.insertNewMessage(roomId, message)) {
+          io.in(roomId).emit("message", message);
+        }
       }
     });
 
     socket.on("enter_room", (newRoomId) => {
-      if (newRoomId) {
-        if (newRoomId != roomId) {
-          leaveTheRoom();
-        }
+      if (newRoomId && newRoomId != roomId) {
+        leaveTheRoom(newRoomId);
+
         if (rooms.hasOwnProperty(newRoomId)) {
           rooms[newRoomId].push(user);
         } else {
@@ -52,16 +52,21 @@ const socketHandle = (server) => {
       leaveTheRoom();
     });
 
-    const leaveTheRoom = () => {
-      if (rooms[roomId]) {
-        const index = rooms[roomId].indexOf(user);
-        if (index >= 0) {
-          rooms[roomId].splice(index, 1);
-        }
-
+    const leaveTheRoom = (newRoomId) => {
+      if (roomId && rooms[roomId]) {
+        removeUserFromRoom(userId, roomId);
         socket.to(roomId).emit("is_online", rooms[roomId]);
         socket.leave(roomId);
         roomId = undefined;
+      } else if (newRoomId && rooms[newRoomId]) {
+        removeUserFromRoom(userId, newRoomId);
+      }
+    };
+
+    const removeUserFromRoom = (userId, roomId) => {
+      const index = rooms[roomId].findIndex((u) => u.userId == userId);
+      if (index >= 0) {
+        rooms[roomId].splice(index, 1);
       }
     };
   });

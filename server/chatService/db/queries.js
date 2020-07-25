@@ -60,8 +60,10 @@ const insertNewMessage = async (roomId, message) => {
     await query(
       `INSERT INTO messages (roomId, userId, text) VALUES (${roomId},${message.userId},"${message.text}")`
     );
+    return 1;
   } catch (error) {
     console.log(error);
+    return 0;
   }
 };
 

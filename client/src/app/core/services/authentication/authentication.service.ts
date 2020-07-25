@@ -27,7 +27,7 @@ export class AuthenticationService {
 
   login(email) {
     return this.http
-      .post<User>(`${this.url}/login`, { email })
+      .post<any>(`${this.url}/login`, { email })
       .pipe(
         map((user) => {
           this.connectToChat(user);

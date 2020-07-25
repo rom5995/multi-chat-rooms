@@ -4,7 +4,7 @@ const { promisify } = require("util");
 const query = promisify(connection.query).bind(connection);
 
 const getUserByEmail = async (email) => {
-  let result;
+  let result = [];
   try {
     result = await query(
       `SELECT userId, nickname, email FROM users WHERE email='${email}'`

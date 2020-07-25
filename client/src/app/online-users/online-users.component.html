@@ -1,8 +1,16 @@
-<h5>online users: {{ onlineUsers.length }}</h5>
-<div>
-  <ul>
-    <li *ngFor="let user of onlineUsers">
+<h5
+  (mouseover)="isUsersListVisible = true"
+  (mouseout)="isUsersListVisible = false"
+>
+  online users: {{ onlineUsers.length }}
+</h5>
+<div
+  [ngStyle]="{ visibility: isUsersListVisible ? 'visible' : 'hidden' }"
+  class="user-list card"
+>
+  <div class="card-body">
+    <div *ngFor="let user of onlineUsers" class="list-group-item">
       {{ user.nickname }}
-    </li>
-  </ul>
+    </div>
+  </div>
 </div>

@@ -42,8 +42,6 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    console.log('form', this.registerForm.value);
-
     this.authenticationService
       .register(this.registerForm.value)
       .pipe(first())
@@ -52,7 +50,7 @@ export class RegisterComponent implements OnInit {
           this.router.navigate(['/chat']);
         },
         (error) => {
-          console.log(error);
+          alert('bad thing happened');
         }
       );
   }

@@ -60,8 +60,6 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private leftRoom(): void {
-    this.socketService.leftRoom();
-
     this._messagesSubscribtion.unsubscribe();
     this._onlineSubscribtion.unsubscribe();
   }

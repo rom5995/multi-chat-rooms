@@ -8,6 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class OnlineUsersComponent implements OnInit {
   @Input() onlineUsers: User[] = [];
+  isUsersListVisible: boolean = false;
 
   constructor() {}
 

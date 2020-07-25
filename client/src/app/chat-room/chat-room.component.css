@@ -1,0 +1,6 @@
+.messages-list {
+  height: 500px;
+  overflow-x: hidden;
+  text-align: justify;
+  box-sizing: content-box;
+}

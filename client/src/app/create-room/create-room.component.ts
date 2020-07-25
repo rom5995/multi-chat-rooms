@@ -21,7 +21,7 @@ export class CreateRoomComponent implements OnInit {
       .subscribe(
         (data) => {},
         (error) => {
-          console.log(error);
+          alert('cannot create a room');
         }
       );
   }

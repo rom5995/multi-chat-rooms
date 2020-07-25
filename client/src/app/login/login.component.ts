@@ -13,6 +13,7 @@ import { AuthenticationService } from '../core/services';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   submitted: boolean = false;
+  loading: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -37,20 +38,22 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-    // stop here if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
-    //TODO: why subscribe?
+
     this.authenticationService
       .login(this.f.email.value)
       .pipe(first())
       .subscribe(
-        (data) => {
+        (res) => {
+          if (res.ok) {
+          } else {
+          }
           this.router.navigate(['/chat']);
         },
         (error) => {
-          console.log(error);
+          alert('incorrect email');
         }
       );
   }
