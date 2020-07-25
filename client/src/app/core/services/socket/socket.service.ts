@@ -1,5 +1,6 @@
+import { Room } from './../../models/room';
 import { Message } from './../../models/message';
-import { Observable } from 'rxjs';
+import { Observable, observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import io from 'socket.io-client';
 import { User } from '../../models';
@@ -12,10 +13,6 @@ export class SocketService {
   private url = 'http://localhost:4000';
 
   constructor() {}
-
-  enterRoom(userId: number, roomId: number): void {
-    this.socket = io(`${this.url}/?userId=${userId}&roomId=${roomId}`);
-  }
 
   onConnect(): Observable<User[]> {
     return new Observable<User[]>((observer) => {
@@ -33,7 +30,31 @@ export class SocketService {
     });
   }
 
+  onCreateRoom(): Observable<Room> {
+    return new Observable<Room>((observer) => {
+      this.socket.on('new_room', (room: Room) => {
+        observer.next(room);
+      });
+    });
+  }
+
+  createRoom(room: Room): void {
+    this.socket.emit('new_room', room);
+  }
+
   send(message: Message): void {
     this.socket.emit('message', message);
+  }
+
+  connect(userId: number) {
+    this.socket = io(`${this.url}/?userId=${userId}`);
+  }
+
+  enterRoom(roomId: number): void {
+    this.socket.emit('enter_room', roomId);
+  }
+
+  leftRoom() {
+    this.socket.emit('left_room');
   }
 }

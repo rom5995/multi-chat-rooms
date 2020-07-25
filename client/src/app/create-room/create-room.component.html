@@ -1,0 +1,8 @@
+<div>
+  <input type="text" #roomName placeholder="Enter new room name" />
+</div>
+<div>
+  <button (click)="onCreate(roomName.value); roomName.value = ''">
+    Create
+  </button>
+</div>

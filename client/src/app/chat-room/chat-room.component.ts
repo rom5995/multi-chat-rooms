@@ -14,6 +14,7 @@ import { Room, Message } from './../core/models';
 })
 export class ChatRoomComponent implements OnInit {
   roomId: number;
+  roomName: string;
   messages: Message[];
   user: User;
   onlineUsers: User[] = [];
@@ -27,29 +28,51 @@ export class ChatRoomComponent implements OnInit {
     private socketService: SocketService,
     private authenticationService: AuthenticationService
   ) {
-    this.roomId = +this.route.snapshot.paramMap.get('roomId');
     this.user = this.authenticationService.currentUserValue;
-
-    this.socketService.enterRoom(this.user.userId, this.roomId);
-    this._onlineSubscribtion = this.socketService
-      .onConnect()
-      .subscribe((users: User[]) => {
-        this.onlineUsers = users;
-      });
-    this._messagesSubscribtion = this.socketService
-      .onMessage()
-      .subscribe((message: Message) => {
-        this.messages.push(message);
-      });
   }
 
   ngOnInit(): void {
-    this.getRoomHistory();
+    this.route.params.subscribe((res) => {
+      const newRoomId: number = +this.route.snapshot.paramMap.get('roomId');
+
+      if (this.roomId && this.roomId != newRoomId) {
+        this.leftRoom();
+      }
+
+      this.roomId = newRoomId;
+      this.socketService.enterRoom(this.roomId);
+
+      this._onlineSubscribtion = this.socketService
+        .onConnect()
+        .subscribe((users: User[]) => {
+          this.onlineUsers = users;
+        });
+      this._messagesSubscribtion = this.socketService
+        .onMessage()
+        .subscribe((message: Message) => {
+          this.messages.push(message);
+        });
+
+      this.messages = [];
+      this.getRoomHistory();
+    });
+  }
+
+  private leftRoom(): void {
+    this.socketService.leftRoom();
+
+    this._messagesSubscribtion.unsubscribe();
+    this._onlineSubscribtion.unsubscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.leftRoom();
   }
 
   getRoomHistory(): void {
-    this.roomService
-      .getRoomHistory(this.roomId)
-      .subscribe((messages: Message[]) => (this.messages = messages));
+    this.roomService.getRoomHistory(this.roomId).subscribe((result: any) => {
+      this.messages = result.messages;
+      this.roomName = result.roomName;
+    });
   }
 }

@@ -1,5 +1,6 @@
+import { SocketService } from './../socket/socket.service';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -10,11 +11,7 @@ import { Room, Message } from '../../models';
   providedIn: 'root',
 })
 export class RoomService {
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  };
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private socketService: SocketService) {}
 
   getRooms(): Observable<Room[]> {
     return this.http
@@ -22,11 +19,21 @@ export class RoomService {
       .pipe(catchError(this.handleError<Room[]>('getRooms', [])));
   }
 
-  getRoomHistory(id: number): Observable<Message[]> {
+  getRoomHistory(id: number): Observable<any> {
     const url = `http://localhost:4000/getRoomHistory/${id}`;
     return this.http
       .get<Message[]>(url)
-      .pipe(catchError(this.handleError<Message[]>('getRoomHistory', [])));
+      .pipe(catchError(this.handleError<any>('getRoomHistory', [])));
+  }
+
+  createNewRoom(room: Room) {
+    return this.http
+      .post<any>('http://localhost:4000/createNewRoom', room)
+      .pipe(
+        map((newRoom) => {
+          this.socketService.createRoom(newRoom);
+        })
+      );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

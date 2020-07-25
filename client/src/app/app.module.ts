@@ -11,9 +11,10 @@ import { RoomsComponent } from './rooms/rooms.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { MessageInputComponent } from './message-input/message-input.component';
+import { CreateRoomComponent } from './create-room/create-room.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, ChatComponent, RoomsComponent, ChatRoomComponent, LobbyComponent, MessageInputComponent],
+  declarations: [AppComponent, LoginComponent, ChatComponent, RoomsComponent, ChatRoomComponent, LobbyComponent, MessageInputComponent, CreateRoomComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

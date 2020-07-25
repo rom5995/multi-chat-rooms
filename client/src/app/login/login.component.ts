@@ -18,7 +18,11 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private authenticationService: AuthenticationService
-  ) {}
+  ) {
+    if (this.authenticationService.currentUserValue) {
+      this.router.navigate(['/chat']);
+    }
+  }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -37,7 +41,7 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) {
       return;
     }
-
+    //TODO: why subscribe?
     this.authenticationService
       .login(this.f.email.value)
       .pipe(first())

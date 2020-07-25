@@ -13,32 +13,60 @@ const socketHandle = require("./socketHandle");
 
 const rooms = {};
 io.on("connection", async (socket) => {
-  const { userId, roomId } = socket.handshake.query;
+  const userId = socket.handshake.query.userId;
   const user = { userId };
-
-  if (rooms.hasOwnProperty(roomId)) {
-    rooms[roomId].push(user);
-  } else {
-    rooms[roomId] = [user];
-  }
-
-  socket.join(roomId);
-  io.in(roomId).emit("is_online", rooms[roomId]);
+  let roomId;
 
   socket.on("message", (message) => {
-    if ((message && message.userId, message.text)) {
+    if (message && message.userId && message.text) {
       io.in(roomId).emit("message", message);
       writeMessageToDB(message, roomId);
     }
   });
 
-  socket.on("disconnect", () => {
-    const index = rooms[roomId].indexOf(user);
-    if (index >= 0) {
-      rooms[roomId].splice(index, 1);
+  socket.on("enter_room", (newRoomId) => {
+    if (newRoomId) {
+      if (newRoomId != roomId) {
+        leaveTheRoom();
+      }
+      if (rooms.hasOwnProperty(newRoomId)) {
+        rooms[newRoomId].push(user);
+      } else {
+        rooms[newRoomId] = [user];
+      }
+      roomId = newRoomId;
+      socket.join(roomId);
+      io.in(roomId).emit("is_online", rooms[roomId]);
     }
-    socket.in(roomId).emit("is_online", rooms[roomId]);
   });
+
+  socket.on("new_room", (room) => {
+    console.log("here 2");
+    if (room && room.roomId && room.name) {
+      socket.emit("new_room", room);
+    }
+  });
+
+  socket.on("left_room", () => {
+    leaveTheRoom();
+  });
+
+  socket.on("disconnect", () => {
+    leaveTheRoom();
+  });
+
+  const leaveTheRoom = () => {
+    if (rooms[roomId]) {
+      const index = rooms[roomId].indexOf(user);
+      if (index >= 0) {
+        rooms[roomId].splice(index, 1);
+      }
+
+      socket.to(roomId).emit("is_online", rooms[roomId]);
+      socket.leave(roomId);
+      roomId = undefined;
+    }
+  };
 });
 
 const writeMessageToDB = (message, roomId) => {
@@ -79,19 +107,25 @@ app.get("/", (req, res) => {
 });
 
 app.get("/getRoomHistory/:roomId", (req, res) => {
-  if (req.params.roomId) {
+  const roomId = req.params.roomId;
+  if (roomId) {
     connection.query(
       `Select m.messageId, u.nickname, m.text 
   FROM messages m
   INNER JOIN users u USING (userId) 
-  WHERE m.roomId = ${req.params.roomId}`,
+  WHERE m.roomId = ${roomId};
+  SELECT name FROM rooms WHERE roomId = ${roomId}`,
       (err, result) => {
         if (err) {
           console.log(err);
           res.sendStatus(500);
           return;
         }
-        res.json(result);
+        const resultObject = {
+          messages: result[0],
+          roomName: result[1][0].name,
+        };
+        res.json(resultObject);
       }
     );
   } else {
@@ -110,7 +144,8 @@ app.post("/createNewRoom", (req, res) => {
           res.sendStatus(500);
           return;
         }
-        res.status(200).json(name);
+        const room = { roomId: result.insertId, name };
+        res.status(200).json(room);
       }
     );
   } else res.sendStatus(400);
